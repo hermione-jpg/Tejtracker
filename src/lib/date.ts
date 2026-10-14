@@ -1,4 +1,15 @@
-import { format, addDays, subDays, startOfWeek, startOfMonth, parseISO } from 'date-fns';
+import {
+  format,
+  addDays,
+  subDays,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth as dfIsSameMonth,
+  parseISO,
+} from 'date-fns';
 
 export const ISO = 'yyyy-MM-dd';
 
@@ -29,6 +40,42 @@ export function monthStartISO(iso: string): string {
 
 export function formatDisplay(iso: string): string {
   return format(fromISO(iso), 'EEE, d MMM yyyy');
+}
+
+// Mon-Sun dates (ISO strings) for the week containing anchorISO.
+export function weekDatesISO(anchorISO: string): string[] {
+  const start = startOfWeek(fromISO(anchorISO), { weekStartsOn: 1 });
+  return Array.from({ length: 7 }, (_, i) => toISO(addDays(start, i)));
+}
+
+// Full calendar-grid dates (always whole weeks, Mon-Sun) covering the month
+// containing anchorISO -- e.g. 35 or 42 entries.
+export function monthGridISO(anchorISO: string): string[] {
+  const monthStart = startOfMonth(fromISO(anchorISO));
+  const monthEnd = endOfMonth(fromISO(anchorISO));
+  const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+  return eachDayOfInterval({ start: gridStart, end: gridEnd }).map(toISO);
+}
+
+export function isSameMonth(aISO: string, bISO: string): boolean {
+  return dfIsSameMonth(fromISO(aISO), fromISO(bISO));
+}
+
+// [startISO, endISO] for the actual calendar month containing anchorISO
+// (not padded to whole weeks -- that's what monthGridISO is for).
+export function monthBoundsISO(anchorISO: string): [string, string] {
+  return [toISO(startOfMonth(fromISO(anchorISO))), toISO(endOfMonth(fromISO(anchorISO)))];
+}
+
+export function addMonthsISO(anchorISO: string, months: number): string {
+  const d = fromISO(anchorISO);
+  d.setMonth(d.getMonth() + months);
+  return toISO(d);
+}
+
+export function formatMonthLabel(anchorISO: string): string {
+  return format(fromISO(anchorISO), 'MMMM yyyy');
 }
 
 export function formatDuration(totalSeconds: number): string {

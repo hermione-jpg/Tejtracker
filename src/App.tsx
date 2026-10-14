@@ -4,6 +4,7 @@ import { AccessGate } from './components/AccessGate';
 import { Layout } from './components/Layout';
 import { TimerProvider } from './lib/TimerContext';
 import { setUnauthorizedHandler } from './lib/api';
+import CalendarPage from './pages/Calendar';
 import Today from './pages/Today';
 import Personal from './pages/Personal';
 import Professional from './pages/Professional';
@@ -21,7 +22,8 @@ export default function App() {
         <BrowserRouter>
           <Layout>
             <Routes>
-              <Route path="/" element={<Today />} />
+              <Route path="/" element={<CalendarPage />} />
+              <Route path="/today" element={<Today />} />
               <Route path="/personal" element={<Personal />} />
               <Route path="/professional" element={<Professional />} />
               <Route path="/history" element={<History />} />

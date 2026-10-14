@@ -2,7 +2,8 @@ import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 
 const TABS = [
-  { to: '/', label: 'Today', end: true },
+  { to: '/', label: 'Calendar', end: true },
+  { to: '/today', label: 'Today' },
   { to: '/personal', label: 'Personal' },
   { to: '/professional', label: 'Professional' },
   { to: '/history', label: 'History' },
