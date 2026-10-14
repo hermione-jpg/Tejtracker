@@ -1,14 +1,49 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { supabaseAdmin, hasSupabaseConfig } from '../_lib/supabaseAdmin';
-import { checkAuth, isAllowedTable } from '../_lib/auth.js';
+import { createClient } from '@supabase/supabase-js';
 
-// Query params that control the request itself rather than acting as
-// equality filters on columns.
+const ALLOWED_TABLES = [
+  'goals',
+  'projects',
+  'tasks',
+  'time_entries',
+  'notes',
+  'routines',
+  'routine_logs',
+  'daily_reflections',
+] as const;
+type AllowedTable = (typeof ALLOWED_TABLES)[number];
+function isAllowedTable(table: string): table is AllowedTable {
+  return (ALLOWED_TABLES as readonly string[]).includes(table);
+}
+
+function getAdmin() {
+  const url = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) return null;
+  return createClient(url, serviceKey, { auth: { persistSession: false } });
+}
+
+function checkAuth(req: VercelRequest, res: VercelResponse): boolean {
+  const expected = process.env.APP_ACCESS_TOKEN;
+  if (!expected) {
+    res.status(500).json({ error: 'Server misconfigured: APP_ACCESS_TOKEN is not set.' });
+    return false;
+  }
+  const header = req.headers['authorization'];
+  const token = typeof header === 'string' ? header.replace(/^Bearer\s+/i, '') : '';
+  if (token !== expected) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return false;
+  }
+  return true;
+}
+
 const RESERVED_PARAMS = new Set(['order', 'ascending', 'limit']);
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!checkAuth(req, res)) return;
-  if (!hasSupabaseConfig()) {
+  const supabaseAdmin = getAdmin();
+  if (!supabaseAdmin) {
     res.status(500).json({ error: 'Server misconfigured: Supabase env vars are missing.' });
     return;
   }
