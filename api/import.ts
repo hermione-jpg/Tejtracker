@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { supabaseAdmin, hasSupabaseConfig } from './_lib/supabaseAdmin';
-import { checkAuth, isAllowedTable } from './_lib/auth';
+import { checkAuth, isAllowedTable } from './_lib/auth.js';
 
 // Very light shape validation -- enough to reject garbage before it ever
 // reaches the database, without being a full schema validator.
