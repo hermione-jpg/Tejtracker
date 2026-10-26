@@ -8,7 +8,6 @@ import CalendarPage from './pages/Calendar';
 import Today from './pages/Today';
 import Personal from './pages/Personal';
 import Professional from './pages/Professional';
-import History from './pages/History';
 import Settings from './pages/Settings';
 
 export default function App() {
@@ -26,7 +25,6 @@ export default function App() {
               <Route path="/today" element={<Today />} />
               <Route path="/personal" element={<Personal />} />
               <Route path="/professional" element={<Professional />} />
-              <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
             </Routes>
           </Layout>
